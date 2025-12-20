@@ -1,6 +1,6 @@
 import { deleteTask, toggleFinished, showUpdateForm } from "../utils/task.js";
 
-function Task({ task, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit }) {
+function Task({ task, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit, setFinishedTasks }) {
   // format date string nicely
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -14,17 +14,17 @@ function Task({ task, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit,
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between p-4 mb-4 shadow rounded border border-gray-200 bg-gray-800 transition duration-300 hover:bg-gray-900">
+    <div className="flex gap-4 flex-col sm:flex-row items-center justify-between p-4 mb-4 shadow rounded border border-gray-200 bg-gray-800 transition duration-300 hover:bg-gray-900">
       {/* Task Info */}
       <div className="flex-1 space-y-3">
         <p className={`text-lg font-semibold text-white ${task.isFinished ? "opacity-60 line-through" : ""}`}>{task.name}</p>
         {/* <p className="text-sm text-white">Finished: No</p> */}
-        <div className="flex text-sm items-center text-white gap-3 opacity-50 transition duration-300 hover:opacity-100">
-          <p className="">
+        <div className="flex text-sm items-center text-white gap-x-3 opacity-50 transition duration-300 hover:opacity-100 flex-col sm:flex-row">
+          <p>
             <span className="font-bold">Created at:</span> {formatDate(task.createdAt)}
           </p>{" "}
-          —
-          <p className="">
+          <span>—</span>
+          <p>
             <span className="font-bold">Updated at:</span> {formatDate(task.updatedAt)}
           </p>
         </div>
@@ -45,7 +45,7 @@ function Task({ task, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit,
         <button
           className={`mt-2 sm:mt-0 px-4 py-1 text-white rounded hover:opacity-60 transition duration-300 ${task.isFinished ? "bg-orange-500" : "bg-green-500"}`}
           title={`${!task.isFinished ? "Complete" : "Uncomplete"} Task`}
-          onClick={() => toggleFinished(task, setTasks, setShowFlashMsg, setFlashMsgData)}
+          onClick={() => toggleFinished(task, setTasks, setShowFlashMsg, setFlashMsgData, setFinishedTasks)}
         >
           ✔️
         </button>

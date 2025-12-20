@@ -7,7 +7,7 @@ const deleteTask = async (task, setTasks) => {
   const taskId = task._id;
   // Error handling
   try {
-    const response = await axios.delete(`http://localhost:8000/tasks/${taskId}`);
+    const response = await axios.delete(`/tasks/${taskId}`);
     console.log("delete request response:", response);
     if (response.status === 200) {
       // modify tasks piece of state, filter deleted task out
@@ -23,18 +23,21 @@ const deleteTask = async (task, setTasks) => {
 
 // ============================================================================
 
-const toggleFinished = async (task, setTasks, setShowFlashMsg, setFlashMsgData) => {
+const toggleFinished = async (task, setTasks, setShowFlashMsg, setFlashMsgData, setFinishedTasks) => {
   const taskId = task._id;
   // send patch network req -- update task's isFinished by id
   try {
-    const response = await axios.patch(`http://localhost:8000/tasks/${taskId}`, { isFinished: !task.isFinished });
+    const response = await axios.patch(`/tasks/${taskId}`, { isFinished: !task.isFinished });
     console.log("toggleFinished request response:", response);
     if (response.status === 200) {
+      let tasks;
       // update state
       setTasks((prevState) => {
-        return prevState.map((entry) =>
+        tasks = prevState.map((entry) =>
           entry._id === taskId ? { ...entry, isFinished: !entry.isFinished, updatedAt: response.data.updatedTask.updatedAt } : entry
         );
+        setFinishedTasks(tasks.filter((task) => task.isFinished).length);
+        return tasks;
         // return prevState.map((entry) => (entry._id === taskId ? (entry.isFinished = !entry.isFinished) : entry)); // wrong: must spread first, then reassign
       });
 

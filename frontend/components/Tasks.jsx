@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Task from "./Task";
 
-function Tasks({ tasks, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit }) {
-  const [finishedTasks, setFinishedTasks] = useState(0);
-
+function Tasks({ tasks, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit, finishedTasks, setFinishedTasks }) {
   useEffect(() => {
     // get all tasks from db
     const getTasks = async () => {
-      const response = await axios.get("http://localhost:8000/tasks");
+      const response = await axios.get("/tasks", { withCredentials: true }); // credentials enabled to include httpOnly token cookie
       console.log("get all tasks response:", response);
       setTasks(response.data.tasks);
       if (response.data.tasks.length > 0) {
@@ -43,6 +41,7 @@ function Tasks({ tasks, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdi
                 setFlashMsgData={setFlashMsgData}
                 setTaskInEdit={setTaskInEdit}
                 setTaskIdInEdit={setTaskIdInEdit}
+                setFinishedTasks={setFinishedTasks}
               />
             ))
           : ""}

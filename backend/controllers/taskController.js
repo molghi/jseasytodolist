@@ -1,4 +1,5 @@
 const taskModel = require("../models/taskModel");
+const jwt = require("jsonwebtoken");
 
 // @desc    create task
 // @route   POST /tasks
@@ -29,6 +30,18 @@ async function createTask(req, res) {
 // @desc    get all tasks
 // @route   GET /tasks
 async function getTasks(req, res) {
+  // verify user
+  if (!req.cookies || !req.cookies.token) {
+    return res.status(401).json({ msg: "Not Authorized" });
+  } else {
+    try {
+      const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+      req.user = decoded;
+    } catch (error) {
+      return res.status(401).json({ msg: "Not authorized" });
+    }
+  }
+
   // must be auth protected
   // query db, return all entries, newest first
   const tasks = await taskModel.find().sort({ createdAt: -1 });
