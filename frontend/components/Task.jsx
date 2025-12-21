@@ -1,6 +1,10 @@
+import { useContext } from "react";
+import MyContext from "../context/MyContext.jsx";
 import { deleteTask, toggleFinished, showUpdateForm } from "../utils/task.js";
 
-function Task({ task, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit, setFinishedTasks }) {
+function Task({ task }) {
+  const { setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit, setFinishedTasks } = useContext(MyContext);
+
   // format date string nicely
   const formatDate = (dateString) => {
     const date = new Date(dateString);

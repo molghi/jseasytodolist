@@ -1,7 +1,10 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
 import axios from "axios";
+import MyContext from "../context/MyContext";
 
-function SignUpForm({ setIsLoggedIn, setShowFlashMsg, setFlashMsgData }) {
+function SignUpForm() {
+  const { setIsLoggedIn, setShowFlashMsg, setFlashMsgData } = useContext(MyContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");

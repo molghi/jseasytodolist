@@ -2,7 +2,7 @@ import { useState } from "react";
 import SignUpForm from "./SignUpForm";
 import LogInForm from "./LogInForm";
 
-function Auth({ setIsLoggedIn, setShowFlashMsg, setFlashMsgData }) {
+function Auth() {
   const [activeForm, setActiveForm] = useState(0); // 0 for signup, 1 for login
 
   return (
@@ -31,7 +31,7 @@ function Auth({ setIsLoggedIn, setShowFlashMsg, setFlashMsgData }) {
       <h2 className="text-3xl font-bold text-center mb-6">{activeForm === 0 ? "Sign Up" : "Log In"}</h2>
 
       {/* Form */}
-      {activeForm === 0 ? <SignUpForm setIsLoggedIn={setIsLoggedIn} setShowFlashMsg={setShowFlashMsg} setFlashMsgData={setFlashMsgData} /> : <LogInForm />}
+      {activeForm === 0 ? <SignUpForm /> : <LogInForm />}
     </div>
   );
 }

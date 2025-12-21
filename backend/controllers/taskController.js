@@ -31,6 +31,7 @@ async function createTask(req, res) {
 // @route   GET /tasks
 async function getTasks(req, res) {
   // verify user
+
   if (!req.cookies || !req.cookies.token) {
     return res.status(401).json({ msg: "Not Authorized" });
   } else {

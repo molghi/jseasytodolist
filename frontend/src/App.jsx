@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useContext } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Form from "../components/Form";
@@ -6,24 +6,18 @@ import Tasks from "../components/Tasks";
 import FlashMessage from "../components/FlashMessage";
 import Auth from "../components/Auth";
 import axios from "axios";
+import MyContext from "../context/MyContext";
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-  const [showFlashMsg, setShowFlashMsg] = useState(false);
-  const [flashMsgData, setFlashMsgData] = useState([]);
-  const [taskInEdit, setTaskInEdit] = useState("");
-  const [taskIdInEdit, setTaskIdInEdit] = useState("");
-  const [finishedTasks, setFinishedTasks] = useState(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, showFlashMsg, setIsLoggedIn, setTasks, setFinishedTasks } = useContext(MyContext);
 
   useEffect(() => {
     // get all tasks from db
     const getTasks = async () => {
       try {
         const response = await axios.get("/tasks", { withCredentials: true }); // credentials enabled to include httpOnly token cookie
-        // console.log("get all tasks response:", response);
         if (response.status === 401) {
-          // not logged in, no token received
+          console.log(`not logged in, no token received`);
         } else {
           setIsLoggedIn(true);
           setTasks(response.data.tasks);
@@ -32,7 +26,7 @@ function App() {
           }
         }
       } catch (error) {
-        // console.log(error);
+        console.log(error);
       }
     };
     getTasks();
@@ -41,35 +35,18 @@ function App() {
   return (
     <div className="flex flex-col min-h-[100vh]">
       <main className="flex-1">
-        <Header isLoggedIn={isLoggedIn} />
+        <Header />
 
         {!isLoggedIn ? (
-          <Auth setIsLoggedIn={setIsLoggedIn} setShowFlashMsg={setShowFlashMsg} setFlashMsgData={setFlashMsgData} />
+          <Auth />
         ) : (
           <>
-            <Form
-              title="Add Your Task"
-              taskSetter={setTasks}
-              setShowFlashMsg={setShowFlashMsg}
-              setFlashMsgData={setFlashMsgData}
-              taskInEdit={taskInEdit}
-              taskIdInEdit={taskIdInEdit}
-              setTaskInEdit={setTaskInEdit}
-            />
-            <Tasks
-              tasks={tasks}
-              setTasks={setTasks}
-              setShowFlashMsg={setShowFlashMsg}
-              setFlashMsgData={setFlashMsgData}
-              setTaskInEdit={setTaskInEdit}
-              setTaskIdInEdit={setTaskIdInEdit}
-              finishedTasks={finishedTasks}
-              setFinishedTasks={setFinishedTasks}
-            />
+            <Form title="Add Your Task" />
+            <Tasks />
           </>
         )}
 
-        {showFlashMsg && <FlashMessage showFlashMsg={showFlashMsg} flashMsgData={flashMsgData} setShowFlashMsg={setShowFlashMsg} />}
+        {showFlashMsg && <FlashMessage />}
       </main>
       <Footer />
     </div>

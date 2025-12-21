@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
+import MyContext from "../context/MyContext";
 import axios from "axios";
 import Task from "./Task";
 
-function Tasks({ tasks, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit, finishedTasks, setFinishedTasks }) {
+function Tasks() {
+  const { tasks, setTasks, finishedTasks, setFinishedTasks } = useContext(MyContext);
+
   useEffect(() => {
     // get all tasks from db
     const getTasks = async () => {
@@ -30,22 +33,7 @@ function Tasks({ tasks, setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdi
       </div>
 
       {/* Task List Container */}
-      <div className="space-y-6">
-        {tasks
-          ? tasks.map((task) => (
-              <Task
-                key={task._id}
-                task={task}
-                setTasks={setTasks}
-                setShowFlashMsg={setShowFlashMsg}
-                setFlashMsgData={setFlashMsgData}
-                setTaskInEdit={setTaskInEdit}
-                setTaskIdInEdit={setTaskIdInEdit}
-                setFinishedTasks={setFinishedTasks}
-              />
-            ))
-          : ""}
-      </div>
+      <div className="space-y-6">{tasks ? tasks.map((task) => <Task key={task._id} task={task} />) : ""}</div>
     </section>
   );
 }

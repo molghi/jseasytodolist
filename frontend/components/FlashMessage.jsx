@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import MyContext from "../context/MyContext";
 
-function FlashMessage({ type, message, showFlashMsg, flashMsgData, setShowFlashMsg }) {
+function FlashMessage({ type, message }) {
+  const { showFlashMsg, flashMsgData, setShowFlashMsg } = useContext(MyContext);
+
   type = "warning";
   message = "flash message text";
 

@@ -16,6 +16,8 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/logout": "http://localhost:8000",
+      "/login": "http://localhost:8000",
     },
   },
 });

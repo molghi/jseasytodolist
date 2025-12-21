@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
+import MyContext from "../context/MyContext";
 
-function Form({ title = "Add Your Task", taskSetter, setShowFlashMsg, setFlashMsgData, taskInEdit, taskIdInEdit, setTaskInEdit }) {
+function Form({ title = "Add Your Task" }) {
+  const { setTasks, setShowFlashMsg, setFlashMsgData, taskInEdit, taskIdInEdit, setTaskInEdit } = useContext(MyContext);
   const [btnText, setBtnText] = useState(title.includes("Add") ? "Add Task" : "Edit Task");
   const [btnBg, setBtnBg] = useState(title.includes("Add") ? "bg-blue-500" : "bg-green-500");
   const [blockTitle, setBlockTitle] = useState(title.includes("Add") ? "Add Your Task" : "Edit Your Task");
@@ -28,7 +30,7 @@ function Form({ title = "Add Your Task", taskSetter, setShowFlashMsg, setFlashMs
       };
       const response = await axios.post("http://localhost:8000/tasks", newTask);
       console.log("create new task response:", response);
-      taskSetter((prevState) => [response.data.task, ...prevState]);
+      setTasks((prevState) => [response.data.task, ...prevState]);
       setInputValue("");
       setShowFlashMsg(true);
       if (response.status >= 200 && response.status < 300) setFlashMsgData(["success", "Operation successful!"]);
@@ -40,7 +42,7 @@ function Form({ title = "Add Your Task", taskSetter, setShowFlashMsg, setFlashMs
       setBlockTitle("Add Your Task");
       setBtnText("Add Task");
       setBtnBg("bg-blue-500");
-      taskSetter((prevState) => {
+      setTasks((prevState) => {
         return prevState.map((entry) => (entry._id === taskIdInEdit ? { ...entry, name: inputValue, updatedAt: response.data.updatedTask.updatedAt } : entry));
       });
       setInputValue("");

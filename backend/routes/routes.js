@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { createTask, getTasks, deleteTask, updateTask } = require("../controllers/taskController");
-const { createUser, checkToken } = require("../controllers/userController");
+const { createUser, checkToken, logout, login } = require("../controllers/userController");
 
 // create task
 router.post("/tasks", createTask);
@@ -18,7 +18,10 @@ router.patch("/tasks/:id", updateTask);
 // create user
 router.post("/users", createUser);
 
-// check token
-// router.post("/users/me", checkToken);
+// log out
+router.get("/logout", logout);
+
+// log in
+router.post("/login", login);
 
 module.exports = router;
