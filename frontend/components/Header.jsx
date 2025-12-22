@@ -3,7 +3,7 @@ import { useContext } from "react";
 import MyContext from "../context/MyContext";
 
 function Header() {
-  const { isLoggedIn, setShowFlashMsg, setFlashMsgData, setIsLoggedIn } = useContext(MyContext);
+  const { isLoggedIn, setShowFlashMsg, setFlashMsgData, setIsLoggedIn, userName, setUserName } = useContext(MyContext);
 
   const navMenu = [
     // { name: "Tasks", path: "/" },
@@ -14,15 +14,13 @@ function Header() {
   const logout = async (e) => {
     e.preventDefault();
     const response = await axios.get("/logout");
-    console.log(response);
     if (response.status === 200) {
       setShowFlashMsg(true);
       setFlashMsgData(["success", "Logged out successfully!"]);
       setIsLoggedIn(false);
+      setUserName("");
     }
   };
-
-  const styling = `px-4 py-2 bg-blue-600 rounded-md transition duration-200 hover:opacity-60`;
 
   return (
     <header className="bg-gray-800 p-4 text-white">
@@ -30,12 +28,23 @@ function Header() {
         {/* Left: Logo */}
         <div className="text-2xl font-bold">Easy To-Do List</div>
 
+        {/* Center: Greet user msg */}
+        {isLoggedIn && userName && (
+          <div>
+            Hello, <span className="font-bold">{userName}</span>!
+          </div>
+        )}
+
         {/* Right: Navigation Menu */}
         {isLoggedIn && (
           <nav className="flex gap-4">
             {/* iterate & output elements */}
             {navMenu.map((element, index) => (
-              <button key={index} className={styling} onClick={element.path === "/logout" ? logout : undefined}>
+              <button
+                key={index}
+                className="px-4 py-2 bg-blue-600 rounded-md transition duration-200 hover:opacity-60"
+                onClick={element.path === "/logout" ? logout : undefined}
+              >
                 {element.name}
               </button>
             ))}

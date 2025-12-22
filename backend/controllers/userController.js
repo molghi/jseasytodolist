@@ -29,7 +29,7 @@ async function createUser(req, res) {
     // return user (token) to FE -- UI: show task form & user's tasks, hide auth forms
     // create token
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, name: user.name },
       process.env.JWT_SECRET, // secret key
       { expiresIn: "1d" } // token lifetime
     );
@@ -43,7 +43,7 @@ async function createUser(req, res) {
       path: "/",
     });
 
-    return res.status(201).json({ msg: "User created successfully!" });
+    return res.status(201).json({ msg: "User created successfully!", name: user.name });
   } catch (error) {
     return res.status(400).json({ msg: error.message });
   }
@@ -98,7 +98,7 @@ async function login(req, res) {
   // log user in: sign token, send it w/ httpOnly cookie
   // create token
   const token = jwt.sign(
-    { id: user._id, email: user.email },
+    { id: user._id, email: user.email, name: user.name },
     process.env.JWT_SECRET, // secret key
     { expiresIn: "1d" } // token lifetime
   );
@@ -113,7 +113,7 @@ async function login(req, res) {
   });
 
   // return 200
-  return res.status(200).json({ msg: "Logged in successfully!" });
+  return res.status(200).json({ msg: "Logged in successfully!", name: user.name });
 }
 
 // ============================================================================

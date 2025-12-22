@@ -3,12 +3,12 @@ import axios from "axios";
 import MyContext from "../context/MyContext";
 
 function LogInForm() {
-  const { setIsLoggedIn, setShowFlashMsg, setFlashMsgData } = useContext(MyContext);
+  const { setIsLoggedIn, setShowFlashMsg, setFlashMsgData, setUserName } = useContext(MyContext);
 
-  const firstFieldRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const firstFieldRef = useRef(null);
 
   useEffect(() => {
     firstFieldRef.current.focus();
@@ -19,12 +19,12 @@ function LogInForm() {
     // shoot network req
     try {
       const response = await axios.post("/login", { email, password });
-      console.log("login:", response);
       if (response.status === 200) {
         setIsLoggedIn(true);
         setShowFlashMsg(true);
         setFlashMsgData(["success", "Logged in successfully!"]);
         setError("");
+        setUserName(response.data.name);
       } else {
         setError(response.data.msg);
       }
@@ -36,6 +36,7 @@ function LogInForm() {
 
   return (
     <form onSubmit={login} className="space-y-4">
+      {/* Email */}
       <input
         ref={firstFieldRef}
         type="email"
@@ -48,6 +49,7 @@ function LogInForm() {
         className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
+      {/* Password */}
       <input
         type="password"
         placeholder="Password"
@@ -58,11 +60,12 @@ function LogInForm() {
         className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
+      {/* Button */}
       <button type="submit" className="w-full py-2 bg-blue-500 hover:bg-blue-600 rounded font-semibold">
         Log In
       </button>
 
-      {/* validation errors */}
+      {/* Validation errors */}
       {error && (
         <div className="mt-4 text-[red]">
           <span className="font-bold">Error:</span> {error}

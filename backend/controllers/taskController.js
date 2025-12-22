@@ -1,6 +1,8 @@
 const taskModel = require("../models/taskModel");
 const jwt = require("jsonwebtoken");
 
+// ============================================================================
+
 // @desc    create task
 // @route   POST /tasks
 async function createTask(req, res) {
@@ -14,7 +16,7 @@ async function createTask(req, res) {
 
   // if good, form an obj for db (with task id, userId, timestamps, isFinished)
   const task = {
-    userId: "64a1f8c3b1234e567890abcd", // HARDCODED
+    userId: req.user.id,
     name: newTaskObj.name.trim(),
   };
 
@@ -30,24 +32,24 @@ async function createTask(req, res) {
 // @desc    get all tasks
 // @route   GET /tasks
 async function getTasks(req, res) {
-  // verify user
+  const pageRequested = +req.query.page || 1;
+  const resultsPerPage = 10;
 
-  if (!req.cookies || !req.cookies.token) {
-    return res.status(401).json({ msg: "Not Authorized" });
-  } else {
-    try {
-      const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-      req.user = decoded;
-    } catch (error) {
-      return res.status(401).json({ msg: "Not authorized" });
-    }
-  }
+  // query db, return entries, newest first
+  const tasks = await taskModel
+    .find({ userId: req.user.id })
+    .sort({ createdAt: -1 })
+    .skip((pageRequested - 1) * resultsPerPage)
+    .limit(resultsPerPage);
 
-  // must be auth protected
-  // query db, return all entries, newest first
-  const tasks = await taskModel.find().sort({ createdAt: -1 });
+  const allUserTasksCount = await taskModel.countDocuments({ userId: req.user.id });
+
+  const finishedTasks = await taskModel.countDocuments({ userId: req.user.id, isFinished: true });
+
+  // skip-limiting is more efficient than slicing all tasks
+
   // return response to frontend -- on frontend, re-render it
-  return res.status(200).json({ msg: "Tasks retrieved successfully", tasks });
+  return res.status(200).json({ msg: "Tasks retrieved successfully", tasks, allUserTasksCount, finishedTasks, name: req.user.name });
 }
 
 // ============================================================================
@@ -60,8 +62,10 @@ async function deleteTask(req, res) {
     // query db, delete one task
     const deletedTask = await taskModel.findByIdAndDelete(req.params.id);
 
+    const finishedTasks = await taskModel.countDocuments({ userId: req.user.id, isFinished: true });
+
     // return response to frontend
-    return res.status(200).json({ msg: "Deletion successful", deletedTask });
+    return res.status(200).json({ msg: "Deletion successful", deletedTask, finishedTasks });
   } else {
     return res.status(404).json({ msg: "Task not found" });
   }
@@ -82,8 +86,10 @@ async function updateTask(req, res) {
       // modify task's name
       updatedTask = await taskModel.findByIdAndUpdate(task._id, { name: req.body.name }, { new: true }); // { new: true } to return updated doc (after update)
     }
+    const finishedTasks = await taskModel.countDocuments({ userId: req.user.id, isFinished: true });
+
     // return response to frontend
-    return res.status(200).json({ msg: "Update successful", updatedTask });
+    return res.status(200).json({ msg: "Update successful", updatedTask, finishedTasks });
   } else {
     return res.status(404).json({ msg: "Task not found" });
   }

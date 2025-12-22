@@ -3,7 +3,8 @@ import MyContext from "../context/MyContext.jsx";
 import { deleteTask, toggleFinished, showUpdateForm } from "../utils/task.js";
 
 function Task({ task }) {
-  const { setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit, setFinishedTasks } = useContext(MyContext);
+  const { setTasks, setShowFlashMsg, setFlashMsgData, setTaskInEdit, setTaskIdInEdit, setFinishedTasks, setAllUserTasksCount, currentPage } =
+    useContext(MyContext);
 
   // format date string nicely
   const formatDate = (dateString) => {
@@ -18,12 +19,23 @@ function Task({ task }) {
   };
 
   return (
-    <div className="flex gap-4 flex-col sm:flex-row items-center justify-between p-4 mb-4 shadow rounded border border-gray-200 bg-gray-800 transition duration-300 hover:bg-gray-900">
-      {/* Task Info */}
+    <div
+      className={`flex gap-4 flex-col sm:flex-row items-center justify-between p-4 mb-4 shadow rounded border border-gray-200 bg-gray-800 transition duration-300 hover:bg-gray-900 ${
+        task.isFinished ? "opacity-40 hover:opacity-100" : ""
+      }`}
+    >
       <div className="flex-1 space-y-3">
-        <p className={`text-lg font-semibold text-white ${task.isFinished ? "opacity-60 line-through" : ""}`}>{task.name}</p>
-        {/* <p className="text-sm text-white">Finished: No</p> */}
-        <div className="flex text-sm items-center text-white gap-x-3 opacity-50 transition duration-300 hover:opacity-100 flex-col sm:flex-row">
+        {/* Task name */}
+        <p className={`text-lg font-semibold text-white transition duration-300 ${task.isFinished ? "opacity-30 hover:opacity-100 line-through" : ""}`}>
+          {task.name}
+        </p>
+
+        {/* Created at & updated at */}
+        <div
+          className={`flex text-sm items-center text-white gap-x-3 opacity-50 transition duration-300 hover:opacity-100 flex-col sm:flex-row ${
+            task.isFinished ? "opacity-30" : ""
+          }`}
+        >
           <p>
             <span className="font-bold">Created at:</span> {formatDate(task.createdAt)}
           </p>{" "}
@@ -36,8 +48,10 @@ function Task({ task }) {
 
       {/* Action Buttons */}
       <div className="flex gap-2 flex-wrap max-w-[160px]">
+        {/* Actions block title */}
         <span className="flex-1 basis-full text-white font-bold">Actions</span>
-        {/* edit name */}
+
+        {/* Btn to edit task name */}
         <button
           className="mt-2 sm:mt-0 px-4 py-1 bg-purple-700 text-white rounded hover:opacity-60 transition duration-300"
           title="Edit Task Name"
@@ -45,7 +59,8 @@ function Task({ task }) {
         >
           ✏️
         </button>
-        {/* toggle complete/uncomplete */}
+
+        {/* Btn to toggle task's complete/uncomplete */}
         <button
           className={`mt-2 sm:mt-0 px-4 py-1 text-white rounded hover:opacity-60 transition duration-300 ${task.isFinished ? "bg-orange-500" : "bg-green-500"}`}
           title={`${!task.isFinished ? "Complete" : "Uncomplete"} Task`}
@@ -53,9 +68,10 @@ function Task({ task }) {
         >
           ✔️
         </button>
-        {/* delete */}
+
+        {/* Btn to delete task */}
         <button
-          onClick={() => deleteTask(task, setTasks)}
+          onClick={() => deleteTask(task, setTasks, setShowFlashMsg, setFlashMsgData, setAllUserTasksCount, currentPage, setFinishedTasks)}
           className="mt-2 sm:mt-0 px-4 py-1 bg-red-400 text-white rounded hover:opacity-60 transition duration-300"
           title="Delete Task"
         >

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import axios from "axios";
 import MyContext from "../context/MyContext";
+import { createTask, modifyTaskName } from "../utils/task";
 
 function Form({ title = "Add Your Task" }) {
-  const { setTasks, setShowFlashMsg, setFlashMsgData, taskInEdit, taskIdInEdit, setTaskInEdit } = useContext(MyContext);
+  const { setTasks, setShowFlashMsg, setFlashMsgData, taskInEdit, taskIdInEdit, setTaskInEdit, currentPage, setAllUserTasksCount } = useContext(MyContext);
+
   const [btnText, setBtnText] = useState(title.includes("Add") ? "Add Task" : "Edit Task");
   const [btnBg, setBtnBg] = useState(title.includes("Add") ? "bg-blue-500" : "bg-green-500");
   const [blockTitle, setBlockTitle] = useState(title.includes("Add") ? "Add Your Task" : "Edit Your Task");
@@ -25,29 +26,10 @@ function Form({ title = "Add Your Task" }) {
     // shoot network request
     if (!taskInEdit) {
       // create new task
-      const newTask = {
-        name: inputValue,
-      };
-      const response = await axios.post("http://localhost:8000/tasks", newTask);
-      console.log("create new task response:", response);
-      setTasks((prevState) => [response.data.task, ...prevState]);
-      setInputValue("");
-      setShowFlashMsg(true);
-      if (response.status >= 200 && response.status < 300) setFlashMsgData(["success", "Operation successful!"]);
+      createTask(inputValue, currentPage, setTasks, setInputValue, setShowFlashMsg, setFlashMsgData, setAllUserTasksCount);
     } else {
       // modify task name
-      const response = await axios.patch(`http://localhost:8000/tasks/${taskIdInEdit}`, { name: inputValue });
-      console.log("modify task name response:", response);
-      setTaskInEdit("");
-      setBlockTitle("Add Your Task");
-      setBtnText("Add Task");
-      setBtnBg("bg-blue-500");
-      setTasks((prevState) => {
-        return prevState.map((entry) => (entry._id === taskIdInEdit ? { ...entry, name: inputValue, updatedAt: response.data.updatedTask.updatedAt } : entry));
-      });
-      setInputValue("");
-      setShowFlashMsg(true);
-      if (response.status >= 200 && response.status < 300) setFlashMsgData(["success", "Operation successful!"]);
+      modifyTaskName(taskIdInEdit, inputValue, setTaskInEdit, setBlockTitle, setBtnText, setBtnBg, setTasks, setInputValue, setShowFlashMsg, setFlashMsgData);
     }
   };
 
@@ -69,6 +51,7 @@ function Form({ title = "Add Your Task" }) {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
+
         <button type="submit" className={`px-4 py-2 text-white font-semibold rounded hover:opacity-60 transition duration-300 ${btnBg}`}>
           {btnText}
         </button>

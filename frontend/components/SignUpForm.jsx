@@ -3,7 +3,7 @@ import axios from "axios";
 import MyContext from "../context/MyContext";
 
 function SignUpForm() {
-  const { setIsLoggedIn, setShowFlashMsg, setFlashMsgData } = useContext(MyContext);
+  const { setIsLoggedIn, setShowFlashMsg, setFlashMsgData, setUserName } = useContext(MyContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,16 +20,15 @@ function SignUpForm() {
     try {
       const response = await axios.post("/users", { email, password, passwordConfirm }); // create user; response has jwt
       axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`; // include token in subsequent Axios headers
-      console.log("registerUser response:", response);
       if (response.status === 201) {
         setIsLoggedIn(true);
         setFormError("");
         setShowFlashMsg(true);
-        setFlashMsgData(["success", `Account created!`]);
+        setFlashMsgData(["success", `Account created! User logged in!`]);
+        setUserName(response.data.name);
       }
     } catch (error) {
-      // handle sent validation errors
-      // console.log(error.response?.data?.msg || error.message);
+      // handle validation errors
       if (error.response?.data?.msg.includes("Passwords don't match")) setFormError("Passwords don't match");
       else if (error.response?.data?.msg.includes("duplicate key")) setFormError("Email already belongs to existing user");
       else if (error.response?.data?.msg.includes("Please enter a valid email")) setFormError("Please enter a valid email");
@@ -40,6 +39,7 @@ function SignUpForm() {
 
   return (
     <form onSubmit={registerUser} className="space-y-4">
+      {/* Email */}
       <input
         ref={firstFieldRef}
         type="email"
@@ -52,6 +52,7 @@ function SignUpForm() {
         className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
+      {/* Password */}
       <input
         type="password"
         name="password"
@@ -62,6 +63,7 @@ function SignUpForm() {
         className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
+      {/* Confirm password */}
       <input
         type="password"
         name="passwordConfirm"
@@ -72,11 +74,12 @@ function SignUpForm() {
         className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
+      {/* Button */}
       <button type="submit" className="w-full py-2 bg-green-500 hover:bg-green-600 rounded font-semibold">
         Sign Up
       </button>
 
-      {/* validation errors */}
+      {/* Validation errors */}
       {formError && (
         <div className="mt-4 text-[red]">
           <span className="font-bold">Error:</span> {formError}
