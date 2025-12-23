@@ -1,5 +1,4 @@
 const taskModel = require("../models/taskModel");
-const jwt = require("jsonwebtoken");
 
 // ============================================================================
 
@@ -10,17 +9,16 @@ async function createTask(req, res) {
 
   // validate input
   if (!newTaskObj.name.trim() || newTaskObj.name.trim().length < 3) {
-    // if not good, throw error
-    return res.status(400).json({ msg: "Invalid task name" });
+    return res.status(400).json({ msg: "Invalid task name" }); // if not good, throw error
   }
 
-  // if good, form an obj for db (with task id, userId, timestamps, isFinished)
+  // if all good, form an obj for db (with task id, userId, timestamps, isFinished)
   const task = {
     userId: req.user.id,
     name: newTaskObj.name.trim(),
   };
 
-  // insert into db -- not everything but only what's needed
+  // insert into db (not everything but only what's needed)
   const insertedTask = await taskModel.create(task); // it's async
 
   // return either inserted or all -- on frontend, re-render it

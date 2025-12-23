@@ -8,13 +8,13 @@ async function createUser(req, res) {
   // get form data
   const { email, password, passwordConfirm } = req.body;
 
-  // validate: email must be valid email, and  unique -- handled by Mongoose model validators -- caught here by try-catch
+  // validate: email must be valid email, and unique -- handled by Mongoose model validators -- caught here by try-catch
   // validate: passwords must match
-  if (password !== passwordConfirm) {
-    return res.status(400).json({ msg: `Passwords don't match.` });
-  }
   if (password.trim().length < 6) {
     return res.status(400).json({ msg: `Password is not long enough.` });
+  }
+  if (password !== passwordConfirm) {
+    return res.status(400).json({ msg: `Passwords don't match.` });
   }
 
   try {
@@ -47,13 +47,6 @@ async function createUser(req, res) {
   } catch (error) {
     return res.status(400).json({ msg: error.message });
   }
-}
-
-// ============================================================================
-
-async function checkToken(req, res) {
-  //   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  //   req.user = decoded;
 }
 
 // ============================================================================
@@ -118,4 +111,4 @@ async function login(req, res) {
 
 // ============================================================================
 
-module.exports = { createUser, checkToken, logout, login };
+module.exports = { createUser, logout, login };
